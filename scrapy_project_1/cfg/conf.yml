@@ -1,5 +1,5 @@
 general:
-  file_log_name: C:\Users\utente\source\repos\progetto_scraping\log\main.log
+  file_log_name: C:\Users\utente\source\repos\wasabi-train-project\log\main.log
 
 
 cerca_links:
@@ -9,15 +9,15 @@ cerca_links:
       - watches
       - orologi
     output_file:
-      C:\Users\utente\source\repos\progetto_scraping\saved_links_orologi.txt
+      C:\Users\utente\source\repos\wasabi-train-project\saved_links_orologi.txt
   read_links:
     saved_links_file:
-      C:\Users\utente\source\repos\progetto_scraping\saved_links_orologi.txt
-    #  C:\Users\utente\source\repos\progetto_scraping\saved_links_login.txt
+      C:\Users\utente\source\repos\wasabi-train-project\saved_links_orologi.txt
+    #  C:\Users\utente\source\repos\wasabi-train-project\saved_links_login.txt
 
 spider:
   keywords:
     - rolex
     - patek philippe
   max_depth: 1
-  file_log_name: C:\Users\utente\source\repos\progetto_scraping\scrapy_project_1\log\scrapy.log  # non usato 
+  file_log_name: C:\Users\utente\source\repos\wasabi-train-project\scrapy_project_1\log\scrapy.log  # non usato 

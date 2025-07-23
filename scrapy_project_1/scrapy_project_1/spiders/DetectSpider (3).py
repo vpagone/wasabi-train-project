@@ -3,10 +3,9 @@ import scrapy
 
 from scrapy_project_1.items import MyItem
 from urllib.parse import urljoin
-from bs4 import BeautifulSoup
+#from bs4 import BeautifulSoup
 #from .SchemaOrgDetectorMixin import SchemaOrgDetectorMixin
 from .SchemaOrgDetectorMixin import StructuredDataExtractor
-
 
 #class DetectSpider(scrapy.Spider, SchemaOrgDetectorMixin):
 class DetectSpider(scrapy.Spider):
