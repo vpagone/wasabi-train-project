@@ -46,11 +46,12 @@ if __name__ == "__main__":
 
     # Trova url dalle keyword nel file di configurazione
     logger.info("Avvio cerca links...")
-    urls_string = cerca_links(logger, config_data['cerca_links'])
+    #urls_string = cerca_links(logger, config_data['cerca_links'])
     #urls_string = "https://www.pluswatch.it/?srsltid=AfmBOoqHUi435jtBVV10eTSxReKoasAroKO8Z8xLd_afuaB_XZLTsjYf"
     #urls_string = "https://replichedilusso.co/categoria-prodotto/imitazione-e-repliche-rolex/datejust/"
     #urls_string="https://opsobjects.com/en/product/sport-orologio-con-cassa-e-bracciale-in-metallo/?attribute_pa_colore=oro-giallo"
     #urls_string="https://opsobjects.com"
+    urls_string="https://www.iso.org/standard/27001"  # inico link trovato con microdata
 
     logger.info("Avvio scraping...")
     # Avvia Scrapy con i parametri
@@ -67,7 +68,7 @@ if __name__ == "__main__":
 #       "scrapy", "crawl", "generic_spider",
 #        "scrapy", "crawl", "shopclues",
 #       "scrapy", "crawl", "ecommerce",
-        "scrapy", "crawl", "detect",              #detect, product_detector
+        "scrapy", "crawl", "startspider",              #detect, product_detector
         "-a", f"urls={urls_string}",
         "-a", f"keywords={content_filter}",
         "-O", "RISULTATI.csv",
