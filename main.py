@@ -50,8 +50,8 @@ if __name__ == "__main__":
     #urls_string = "https://www.pluswatch.it/?srsltid=AfmBOoqHUi435jtBVV10eTSxReKoasAroKO8Z8xLd_afuaB_XZLTsjYf"
     #urls_string = "https://replichedilusso.co/categoria-prodotto/imitazione-e-repliche-rolex/datejust/"
     #urls_string="https://opsobjects.com/en/product/sport-orologio-con-cassa-e-bracciale-in-metallo/?attribute_pa_colore=oro-giallo"
-    #urls_string="https://opsobjects.com"
-    urls_string="https://www.iso.org/standard/27001"  # inico link trovato con microdata
+    urls_string="https://opsobjects.com"
+    #urls_string="https://www.iso.org/standard/27001"  # unico link trovato con microdata
 
     logger.info("Avvio scraping...")
     # Avvia Scrapy con i parametri

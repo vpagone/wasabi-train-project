@@ -6,7 +6,9 @@ import scrapy
 from urllib.parse import urljoin
 #from bs4 import BeautifulSoup
 #from .SchemaOrgDetectorMixin import SchemaOrgDetectorMixin
-from .SchemaOrgDetectorMixin import StructuredDataExtractor
+#from .SchemaOrgDetectorMixin import StructuredDataExtractor
+from .SchemaOrgDetectorXPath import StructuredDataExtractorXPath
+from .SchemaOrgDetectorExtruct import StructuredDataExtractorExtruct
 
 #class DetectSpider(scrapy.Spider, SchemaOrgDetectorMixin):
 class TestSpider(scrapy.Spider):
@@ -28,7 +30,7 @@ class TestSpider(scrapy.Spider):
         # Status code
         self.logger.info(f"Status HTTP: {response.status}")
 
-        sd = StructuredDataExtractor(response)
+        sd = StructuredDataExtractorXPath(response)
 #        structured = sd.detect_structured_data()
 #        print (f"{response.url} --- {structured} ")
 

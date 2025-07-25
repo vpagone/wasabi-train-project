@@ -29,3 +29,4 @@ class MyItem(scrapy.Item):
     name=scrapy.Field()
     productID=scrapy.Field()
     sku=scrapy.Field()
+    properties=scrapy.Field()

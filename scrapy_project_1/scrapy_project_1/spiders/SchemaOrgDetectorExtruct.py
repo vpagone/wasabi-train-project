@@ -2,73 +2,44 @@ import json
 
 import json
 from scrapy.selector import Selector
-#from ..items import MyIte  
 from scrapy_project_1.items import MyItem
 
 import extruct
 from w3lib.html import get_base_url
 
-class StructuredDataExtractor:
+class StructuredDataExtractorExtruct:
     def __init__(self, response):
         self.response = response
         #self.selector = Selector(response)
  
     def extract_json_ld(self):
 
-        #print("--------------- extract_json_ld")
-        scripts = self.response.xpath('//script[@type="application/ld+json"]/text()').getall()
+        base_url = get_base_url(self.response.text, self.response.url)
+        dati = extruct.extract(self.response.text, base_url=base_url)
 
-        item_trovati = []
+        json_ld = dati.get('json-ld', [])
+        items = []
+        for jason_ld_item in json_ld:
+            #print(f"microdataItem.get('@type') = {microdataItem.get('itemtype')}" )
+            #print(microdata)
+            if jason_ld_item.get('@type') == 'Product':
 
-        for script in scripts:
-            try:
-                data = json.loads(script)
+                item = MyItem()
 
-                # Verifica se � un grafo o un oggetto singolo
-                elements = data.get('@graph', [data]) if isinstance(data, dict) else data
+                item['url'] =  jason_ld_item['properties']['url']
+                item['title'] = jason_ld_item['properties']['title']
+                item['meta_description'] =  jason_ld_item['properties']['meta_description']
+                item['name'] = jason_ld_item['properties']['name']
+                item['price'] = jason_ld_item['properties']['price']
+                item['productID'] = jason_ld_item['properties']['productID']
+                item['sku'] = jason_ld_item['properties']['sku']
+                item['detected'] = 'json-ld'
+                # item['properties'] = TODO
                 
-                # print("+++++++++++")
-                # print(elements)
-                # print("+++++++++++")
-
-                for el in elements:
-                    # print("+++++++++++")
-                    # print(el)
-                    # print("+++++++++++")
-                    if isinstance(el, dict) and el.get('@type') == 'Product':
-                        #print(type(el.get('offers')))
-                        price = None
-                        p = el.get('offers', {})[0].get('price')
-                        hp = el.get('offers', {})[0].get('highPrice')
-                        lp = el.get('offers', {})[0].get('lowPrice')
-                        if p is not None:
-                            price = p
-                        elif hp is not None:
-                            price = hp
-                        else:
-                            price = lp
-
-                        item = MyItem()
-
-                        item['url'] =  self.response.url
-                        item['title'] = self.response.css('title::text').get()
-                        item['meta_description'] = self.response.css('meta[name="description"]::attr(content)').get()
-                        item['name'] = el.get('name'),
-                        #'brand': el.get('brand', {}).get('name') if isinstance(el.get('brand'), dict) else el.get('brand'),
-                        item['price'] = price
-                        item['productID'] = el.get('productID')
-                        item['sku'] = el.get('sku')
-                        item['detected'] = 'json ld'
-                        item['properties']       = el
-
-                        print(item)
-
-                        item_trovati.append(item)
-
-            except Exception:
-                continue
-
-        return item_trovati
+                items.append(item)
+                print(item)
+        
+        return items
  
     def extract_open_graph(self):
         meta_tags = self.response.xpath('//meta[starts-with(@property, "og:")]')
@@ -77,63 +48,35 @@ class StructuredDataExtractor:
             for tag in meta_tags if tag.xpath('@content').get()
         }
  
-    # def extract_microdata(self):
-
-    #     base_url = get_base_url(self.response.text, self.response.url)
-    #     dati = extruct.extract(self.response.text, base_url=base_url)
-
-    #     microdata = dati.get('microdata', [])
-    #     items = []
-    #     for microdataItem in microdata:
-    #         #print(f"microdataItem.get('@type') = {microdataItem.get('itemtype')}" )
-    #         #print(microdata)
-    #         if microdataItem.get('@type') == 'Product':
-
-    #             item = MyItem()
-
-    #             item['url'] =  microdataItem['properties']['url']
-    #             item['title'] = microdataItem['properties']['title']
-    #             item['meta_description'] =  microdataItem['properties']['meta_description']
-    #             item['name'] = microdataItem['properties']['name']
-    #             item['price'] = microdataItem['properties']['price']
-    #             item['productID'] = microdataItem['properties']['productID']
-    #             item['sku'] = microdataItem['properties']['sku']
-    #             item['detected'] = 'microdata'
-                
-    #             items.append(item)
-    #             print(item)
-
-    #     return items
-    
     def extract_microdata(self):
 
-        # Trova tutti i contenitori di oggetti Product
-        products = self.response.xpath('//div[@itemscope and @itemtype="https://schema.org/Product"]')
+        base_url = get_base_url(self.response.text, self.response.url)
+        dati = extruct.extract(self.response.text, base_url=base_url)
 
+        microdata = dati.get('microdata', [])
         items = []
-        for product in products:
+        for microdataItem in microdata:
+            #print(f"microdataItem.get('@type') = {microdataItem.get('itemtype')}" )
+            #print(microdata)
+            if microdataItem.get('@type') == 'Product':
 
                 item = MyItem()
 
-                item['url']              = product.xpath('.//*[@itemprop="url"]/@href | .//*[@itemprop="url"]/text()').get()
-                item['title']            = product.xpath('.//*[@itemprop="title"]/text()').get()
-                item['meta_description'] = product.xpath('.//*[@itemprop="meta_description"]/text()').get()
-                item['name']             = product.xpath('.//*[@itemprop="name"]/text()').get()
-                item['price']            = product.xpath('.//*[@itemprop="price"]/text()').get()
-                item['sku']              = product.xpath('.//*[@itemprop="sku"]/text()').get()
-                item['productID']        = product.xpath('.//*[@itemprop="productID"]/text()').get(),
-                #item['brand']            = product.xpath('.//*[@itemprop="brand"]//*[@itemprop="name"]/text() | .//*[@itemprop="brand"]/text()').get()
-                #item['description']      = product.xpath('.//*[@itemprop="description"]/text()').get()
-                item['detected']         = 'microdata-xpath'
-                item['properties']       = product.xpath('.//*[@itemprop]').get()
-                                           
-                #print(f"++++++ {item['url'] } \n{item['properties']}\n")
-
+                item['url'] =  microdataItem['properties']['url']
+                item['title'] = microdataItem['properties']['title']
+                item['meta_description'] =  microdataItem['properties']['meta_description']
+                item['name'] = microdataItem['properties']['name']
+                item['price'] = microdataItem['properties']['price']
+                item['productID'] = microdataItem['properties']['productID']
+                item['sku'] = microdataItem['properties']['sku']
+                item['detected'] = 'microdata'
+                # item['properties'] = TODO
+                
                 items.append(item)
-                #print(item)
+                print(item)
 
         return items
- 
+    
     def get_items(self):
 
         items = []

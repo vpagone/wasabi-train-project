@@ -34,5 +34,6 @@ class AddScrapedDatePipeline:
         ordered['product'] = item.get('product')
         ordered['price'] = item.get('price')
         #ordered['discounts'] = item.get('discounts')
+        ordered['properties'] = item.get('properties')
 
         return ordered

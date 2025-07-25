@@ -1,14 +1,9 @@
 import json
 
-import json
 from scrapy.selector import Selector
-#from ..items import MyIte  
 from scrapy_project_1.items import MyItem
 
-import extruct
-from w3lib.html import get_base_url
-
-class StructuredDataExtractor:
+class StructuredDataExtractorXPath:
     def __init__(self, response):
         self.response = response
         #self.selector = Selector(response)
@@ -59,7 +54,7 @@ class StructuredDataExtractor:
                         item['productID'] = el.get('productID')
                         item['sku'] = el.get('sku')
                         item['detected'] = 'json ld'
-                        item['properties']       = el
+                        item['properties'] = el
 
                         print(item)
 
@@ -76,35 +71,7 @@ class StructuredDataExtractor:
             tag.xpath('@property').get(): tag.xpath('@content').get()
             for tag in meta_tags if tag.xpath('@content').get()
         }
- 
-    # def extract_microdata(self):
-
-    #     base_url = get_base_url(self.response.text, self.response.url)
-    #     dati = extruct.extract(self.response.text, base_url=base_url)
-
-    #     microdata = dati.get('microdata', [])
-    #     items = []
-    #     for microdataItem in microdata:
-    #         #print(f"microdataItem.get('@type') = {microdataItem.get('itemtype')}" )
-    #         #print(microdata)
-    #         if microdataItem.get('@type') == 'Product':
-
-    #             item = MyItem()
-
-    #             item['url'] =  microdataItem['properties']['url']
-    #             item['title'] = microdataItem['properties']['title']
-    #             item['meta_description'] =  microdataItem['properties']['meta_description']
-    #             item['name'] = microdataItem['properties']['name']
-    #             item['price'] = microdataItem['properties']['price']
-    #             item['productID'] = microdataItem['properties']['productID']
-    #             item['sku'] = microdataItem['properties']['sku']
-    #             item['detected'] = 'microdata'
-                
-    #             items.append(item)
-    #             print(item)
-
-    #     return items
-    
+     
     def extract_microdata(self):
 
         # Trova tutti i contenitori di oggetti Product
@@ -203,52 +170,52 @@ class StructuredDataExtractor:
         return detected if detected else None
 
 
-class SchemaOrgDetectorMixin:
-    def detect_structured_data(self, response):
-        """Detect structured data formats in the response."""
-        detected = {}
+# class SchemaOrgDetectorMixin:
+#     def detect_structured_data(self, response):
+#         """Detect structured data formats in the response."""
+#         detected = {}
 
-        # Schema.org - Microdata
-        if response.xpath('//*[@itemtype[contains(., "schema.org")]]'):
-            detected["schema_microdata"] = True
+#         # Schema.org - Microdata
+#         if response.xpath('//*[@itemtype[contains(., "schema.org")]]'):
+#             detected["schema_microdata"] = True
 
-        # Schema.org - RDFa
-        if response.xpath('//*[@vocab[contains(., "schema.org")]]'):
-            detected["schema_rdfa"] = True
+#         # Schema.org - RDFa
+#         if response.xpath('//*[@vocab[contains(., "schema.org")]]'):
+#             detected["schema_rdfa"] = True
 
-        # Schema.org - JSON-LD
-        json_ld_blocks = response.xpath('//script[@type="application/ld+json"]/text()').getall()
-        for block in json_ld_blocks:
-            try:
-                data = json.loads(block)
-                contexts = []
-                if isinstance(data, dict):
-                    contexts = [data.get("@context")]
-                elif isinstance(data, list):
-                    contexts = [item.get("@context") for item in data if isinstance(item, dict)]
-                if any("schema.org" in str(ctx) for ctx in contexts if ctx):
-                    detected["schema_jsonld"] = True
-                    break
-            except Exception:
-                continue
+#         # Schema.org - JSON-LD
+#         json_ld_blocks = response.xpath('//script[@type="application/ld+json"]/text()').getall()
+#         for block in json_ld_blocks:
+#             try:
+#                 data = json.loads(block)
+#                 contexts = []
+#                 if isinstance(data, dict):
+#                     contexts = [data.get("@context")]
+#                 elif isinstance(data, list):
+#                     contexts = [item.get("@context") for item in data if isinstance(item, dict)]
+#                 if any("schema.org" in str(ctx) for ctx in contexts if ctx):
+#                     detected["schema_jsonld"] = True
+#                     break
+#             except Exception:
+#                 continue
 
-        # Open Graph
-        if response.xpath('//meta[starts-with(@property, "og:")]'):
-            detected["open_graph"] = True
+#         # Open Graph
+#         if response.xpath('//meta[starts-with(@property, "og:")]'):
+#             detected["open_graph"] = True
 
-        # Twitter Cards
-        if response.xpath('//meta[starts-with(@name, "twitter:")]'):
-            detected["twitter_card"] = True
+#         # Twitter Cards
+#         if response.xpath('//meta[starts-with(@name, "twitter:")]'):
+#             detected["twitter_card"] = True
 
-        # Dublin Core
-        if response.xpath('//meta[starts-with(@name, "DC.")]'):
-            detected["dublin_core"] = True
+#         # Dublin Core
+#         if response.xpath('//meta[starts-with(@name, "DC.")]'):
+#             detected["dublin_core"] = True
 
-        # Microformats (very heuristic)
-        if response.xpath('//*[contains(@class, "h-card") or contains(@class, "h-entry")]'):
-            detected["microformats"] = True
+#         # Microformats (very heuristic)
+#         if response.xpath('//*[contains(@class, "h-card") or contains(@class, "h-entry")]'):
+#             detected["microformats"] = True
 
-        return detected if detected else None
+#         return detected if detected else None
 
 
 
